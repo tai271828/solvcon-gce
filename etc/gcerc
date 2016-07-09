@@ -25,8 +25,8 @@ if [ -f ~/opt/google-cloud-sdk/completion.bash.inc ]; then
   source ~/opt/google-cloud-sdk/completion.bash.inc
 fi
 
-if [ -d ~/gce/bin ]; then
-  namemunge PATH ~/gce/bin
+if [ -d ~/opt/gce/bin ]; then
+  namemunge PATH ~/opt/gce/bin
 fi
 
 alias gcelist="gcloud compute instances list"
