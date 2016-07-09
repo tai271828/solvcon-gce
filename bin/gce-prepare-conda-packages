@@ -1,0 +1,57 @@
+#!/bin/bash
+
+bucket=$1
+if [ -z $bucket ]; then
+  echo "Usage: `basename $0` <bucket_name>"
+  exit
+fi
+
+conda_install() {
+  installdir=$1
+  pkgdir=$2
+  instfile=$3
+  if [[ ! -f $instfile ]]; then
+    echo "Download from http://repo.continuum.io/miniconda/$instfile"
+    wget --quiet http://repo.continuum.io/miniconda/$instfile
+  fi
+  chmod a+x $instfile
+  ./$instfile -b -p $installdir
+  PATH=$installdir/bin:$PATH
+
+  conda install -y $packages
+  conda update -y conda
+  conda update -y --all
+
+  mkdir -p $pkgdir
+  cp -f $instfile $pkgdir/
+  mkdir -p $pkgdir/linux-64
+  cp -a $installdir/pkgs/*.tar.bz2 $pkgdir/linux-64
+}
+
+conda_index() {
+  installdir=$1
+  pkgdir=$2
+  PATH=$installdir/bin:$PATH
+  cd $pkgdir/linux-64
+  conda index
+}
+
+workdir=$(mktemp -d -t conda.prepare.XXXXXXXXXX) || exit
+cd $workdir
+echo "working in $workdir ..."
+
+dstdir=$workdir/packages
+mkdir -p $dstdir
+
+packages="conda-build anaconda \
+cmake six setuptools pip sphinx ipython jupyter \
+cython numpy netcdf4 nose paramiko boto graphviz"
+
+conda_install $workdir/conda3 $dstdir Miniconda3-latest-Linux-x86_64.sh
+conda_index $workdir/conda3 $dstdir
+conda_install $workdir/conda2 $dstdir Miniconda2-latest-Linux-x86_64.sh
+conda_index $workdir/conda2 $dstdir
+
+gsutil -m rsync -d -r $dstdir $bucket
+
+# vim: set et nobomb fenc=utf8 ft=sh ff=unix sw=2 ts=2:
