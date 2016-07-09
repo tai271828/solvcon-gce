@@ -1,5 +1,12 @@
 #!/bin/bash
 
+# bootstrap bash.
+wscript=$(mktemp -t bash.bootstrap.XXXXXXXXXX) || exit
+wget -q -O $wscript https://raw.githubusercontent.com/yungyuc/workspace/master/bin/admin/bootstrap-workspace.sh
+echo "bootstrapping bash using $wscript ..."
+bash $wscript
+
+# now bootstrap GCE.
 repotype=${1:-http}
 if [ "$repotype" == http ] ; then
   repo=http://github.com/solvcon/solvcon-gce
@@ -10,12 +17,18 @@ else
   exit
 fi
 
+echo "bootstrapping GCE from $repo ..."
 target=$HOME/opt/gce
 mkdir -p $target
 git clone $repo $target
 
+echo "write to ~/.bash_acct ..."
 acctfile=~/.bash_acct
 enablestring='if [ -f ~/opt/gce/etc/gcerc ]; then source ~/opt/gce/etc/gcerc; fi'
 echo $enablestring >> $acctfile
+
+# install conda.
+echo "install conda with Python 3 and 2 ..."
+$HOME/opt/gce/bin/admin/install-conda.sh
 
 # vim: set et nobomb fenc=utf8 ft=sh ff=unix sw=2 ts=2:

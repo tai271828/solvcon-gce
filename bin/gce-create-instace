@@ -15,10 +15,6 @@ cat << EOF >> $startup
 timedatectl set-timezone Asia/Taipei
 # install essential packages.
 apt-get install -y git build-essential liblapack-pic liblapack-dev
-# prepare bash bootstrap.
-wget -q https://raw.githubusercontent.com/yungyuc/workspace/master/bin/admin/bootstrap-workspace.sh
-chmod a+rx bootstrap-workspace.sh
-mv bootstrap-workspace.sh /var/lib
 # prepare gce bootstrap.
 wget -q https://raw.githubusercontent.com/solvcon/solvcon-gce/master/bin/admin/bootstrap-gce.sh
 chmod a+rx bootstrap-gce.sh
