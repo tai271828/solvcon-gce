@@ -15,13 +15,13 @@ cat << EOF >> $startup
 timedatectl set-timezone Asia/Taipei
 # install essential packages.
 apt-get install -y git build-essential liblapack-pic liblapack-dev
-# prepare gce bootstrap.
-wget -q https://raw.githubusercontent.com/solvcon/solvcon-gce/master/bin/admin/bootstrap-gce.sh
-chmod a+rx bootstrap-gce.sh
-mv bootstrap-gce.sh /var/lib
 # downloadload conda packages.
 mkdir -p /var/lib/conda/packages
 gsutil -m rsync -d -r gs://conda-packages/ /var/lib/conda/packages/
+# prepare gce bootstrap. (make it the last step!)
+wget -q https://raw.githubusercontent.com/solvcon/solvcon-gce/master/bin/admin/bootstrap-gce.sh
+chmod a+rx bootstrap-gce.sh
+mv bootstrap-gce.sh /var/lib
 EOF
 echo "Startup file:"
 cat $startup | sed -e "s/^/  /"

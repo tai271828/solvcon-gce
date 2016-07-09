@@ -25,8 +25,8 @@ if [ -f ~/opt/google-cloud-sdk/completion.bash.inc ]; then
   source ~/opt/google-cloud-sdk/completion.bash.inc
 fi
 
-if [ -d ~/opt/gce/bin ]; then
-  namemunge PATH ~/opt/gce/bin
+if [ -d $SCGCE/bin ]; then
+  namemunge PATH $SCGCE/bin
 fi
 
 alias gcelist="gcloud compute instances list"
@@ -48,6 +48,20 @@ gssh() {
 
 gscp() {
   scp -o UserKnownHostsFile=`gcekhof $1` "${@:2}"
+}
+
+gstart() {
+  instname=$1
+  noinst=$2
+  if [ -z "$noinst" ]; then
+    gce-create-instance $instname
+  fi
+  gce-register-instance $instname
+  cmd="while [ ! -f /var/lib/bootstrap-gce.sh ] ; \
+do echo \"file not found, wait 3 seconds ...\" ; sleep 3 ; done ; \
+echo \"run /var/lib/bootstrap-gce.sh\" ; \
+/var/lib/bootstrap-gce.sh"
+  gssh $instname $cmd
 }
 
 alias gcessh="ssh -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no"

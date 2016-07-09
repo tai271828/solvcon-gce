@@ -24,7 +24,7 @@ git clone $repo $target
 
 echo "write to ~/.bash_acct ..."
 acctfile=~/.bash_acct
-enablestring='if [ -f ~/opt/gce/etc/gcerc ]; then source ~/opt/gce/etc/gcerc; fi'
+enablestring="if [ -f $target/etc/gcerc ]; then source $target/etc/gcerc; fi"
 echo $enablestring >> $acctfile
 
 # install conda.
