@@ -7,7 +7,7 @@ if [ -z "$instname" ]; then
 fi
 
 gcloud compute instances delete $instname
-instdir=$HOME/var/run/gce/$instname
+instdir=$SCGCE/var/run/$instname
 if [ -d $instdir ]; then rm -rf $instdir; fi
 
 # vim: set et nobomb fenc=utf8 ft=sh ff=unix sw=2 ts=2:

@@ -1,3 +1,5 @@
+export SCGCE="$( cd "$( dirname "${BASH_SOURCE[0]}" )/.." && pwd )"
+
 if [ "$(type -t namemunge)" != function ] ; then
   namemunge () {
     if ! echo ${!1} | egrep -q "(^|:)$2($|:)" ; then
@@ -31,12 +33,12 @@ alias gcelist="gcloud compute instances list"
 alias gcedelete="gcloud compute instances delete"
 
 gceipof() {
-  instdir=$HOME/var/run/gce/$1
+  instdir=$SCGCE/var/run/$1
   cat $instdir/public_ip
 }
 
 gcekhof() {
-  instdir=$HOME/var/run/gce/$1
+  instdir=$SCGCE/var/run/$1
   echo $instdir/known_hosts
 }
 
@@ -56,4 +58,4 @@ alias use.conda3="namemunge PATH ~/opt/conda3/bin"
 alias use.conda2="namemunge PATH ~/opt/conda2/bin"
 if [ -d ~/opt/conda3/bin ]; then use.conda3; fi
 
-# vim: set et nu nobomb fenc=utf8 ft=sh ff=unix sw=2 ts=2:
+# vim: set et nobomb fenc=utf8 ft=sh ff=unix sw=2 ts=2:

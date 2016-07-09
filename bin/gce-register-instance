@@ -6,7 +6,7 @@ if [ -z "$instname" ]; then
   exit
 fi
 
-instdir=$HOME/var/run/gce/$instname
+instdir=$SCGCE/var/run/$instname
 mkdir -p $instdir
 
 instip=`gcloud compute instances describe $instname | grep natIP | cut -d ' ' -f 6`

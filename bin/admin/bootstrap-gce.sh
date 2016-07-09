@@ -10,10 +10,8 @@ else
   exit
 fi
 
-scratch=$(mktemp -d -t tmp.XXXXXXXXXX) || exit
-rm -rf $scratch/*
-git clone $repo $scratch
-mv $scratch/.git ~/
-git checkout -- .
+target=$HOME/opt/gce
+mkdir -p $target
+git clone $repo $target
 
 # vim: set et nobomb fenc=utf8 ft=sh ff=unix sw=2 ts=2:
