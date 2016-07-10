@@ -6,10 +6,10 @@ This repository sets up the bash environment for running [SOLVCON](http://solvco
 $ git clone http://github.com/solvcon/solvcon-gce ~/opt/gce
 ```
 
-To enable it, run `source ~/etc/gcerc`.  Append the following line in ``.bashrc`` to enable it automatically:
+To enable it, run `source ~/opt/gce/etc/gcerc`.  Append the following line in ``.bashrc`` to enable it automatically:
 
 ```bash
-if [ -f ~/etc/gcerc ]; then source ~/etc/gcerc; fi
+if [ -f source ~/opt/gce/etc/gcerc ]; then source source ~/opt/gce/etc/gcerc; fi
 ```
 
 ## Set up Google Cloud Platform SDK
