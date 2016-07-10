@@ -1,4 +1,4 @@
-# SOLVCON Shell Environment in Google Compute Engine
+# SOLVCON in Google Compute Engine
 
 This repository sets up the bash environment for running [SOLVCON](http://solvcon.net/) in [Google Compute Engine (GCE)](https://cloud.google.com/compute/).  It provides tools for creating, provisioning, and accessing virtual-machine (VM) intances in GCE.  Clone the repository to install:
 
@@ -27,7 +27,7 @@ Before using `solvcon-gce` scripts, you need to sign up the GCE service and crea
 1. [Enable "Compute Engine API"](https://console.cloud.google.com/apis/).
 2. [Add a project-wide SSH key](https://console.cloud.google.com/compute/metadata/sshKeys).  Accounts logged into the GCE instance using a project-side SSH key can run `sudo` in the instance.
 
-(GCP offers a 60-day free-trial program, including $300 credits: https://cloud.google.com/free-trial/.)
+(GCP offers a 60-day free-trial program, including $300 credits: https://cloud.google.com/free-trial/ .)
 
 ## Use an Instance
 
