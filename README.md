@@ -35,11 +35,13 @@ Run `gcloud config set project PROJECT_ID` to tell `gcloud` your project ID, whi
 
 After `gstart` finishes, run `gssh <instance_name>` to connect to the instance.
 
+Before conda packages are cached in the project, execution of `gstart` will show error messages, but still work.  See the next section for making the cache work.
+
 To remove the instance (and stops being charged), run `gce-delete-instance <instance_name>`.
 
 ## Cache Conda Packages
 
-To save time from downloading conda packages from the Anaconda server, `solvcon-gce` needs to cache them in a [Google Cloud Storage](https://cloud.google.com/storage) bucket.  Before the cache is in-place, Anaconda won't be available to the instance.  `gstart` would complain like:
+To save time from downloading conda packages from the Anaconda server, `solvcon-gce` needs to cache them in a [Google Cloud Storage](https://cloud.google.com/storage) bucket.  Before the cache is in-place, Anaconda won't be available in the instance.  `gstart` would complain like:
 
 ```
 bash: /var/lib/conda/packages//Miniconda3-latest-Linux-x86_64.sh: No such file or directory
@@ -54,7 +56,7 @@ To populate the cache, run:
 $ gce-prepare-conda-packages <bucket_name>
 ```
 
-The `<bucket_name>` must be `gs://conda-packages/` (it's hard-coded in `solvcon-gce` script).  Before executing the above command, you need to create the bucket in the [Google Cloud Console](https://console.cloud.google.com).  Please note that the bucket should be created in the same zone that the `solvcon-gce` tools assume, otherwise additional charges may incur.  For now it is `asia-east1-c`.
+The `<bucket_name>` can only be `gs://conda-packages/` (it's hard-coded in `solvcon-gce` script).  Before executing the above command, you need to create the bucket using [Google Cloud Console](https://console.cloud.google.com).  Please note that the bucket should be created in the same zone that the `solvcon-gce` tools assume, otherwise additional charges may incur.  For now it is `asia-east1-c`.
 
 ## Trouble Shooting
 
