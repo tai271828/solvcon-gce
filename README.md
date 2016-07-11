@@ -31,7 +31,7 @@ Before using `solvcon-gce` scripts, you need to sign up the GCE service and crea
 
 ## Use an Instance
 
-Run `gstart <instance_name>` to create a GCE VM instance.  It usually takes 2 minutes.  `gstart` also runs the provisioning scripts.
+Run `gcloud config set project PROJECT_ID` to tell `gcloud` your project ID, which should be given when you created your project `ID PROJECT_ID`. Then run `gstart <instance_name>` to create a GCE VM instance.  It usually takes 2 minutes.  `gstart` also runs the provisioning scripts.
 
 After `gstart` finishes, run `gssh <instance_name>` to connect to the instance.
 
@@ -46,3 +46,9 @@ $ gce-prepare-conda-packages <bucket_name>
 ```
 
 You need to create the bucket first.  Please note that the bucket should be created in the same zone of the `solvcon-gce` tools assume, otherwise additional charges may incur.  For now it is `asia-east1-c`.
+
+## Trouble Shooting
+
+### SSH Connection Refused
+
+If your SSH connectioned is refused after issuing `gstart`, please make sure you have unlocked your key phrase of the project-wide SSH key.
