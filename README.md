@@ -31,7 +31,7 @@ Before using `solvcon-gce` scripts, you need to sign up the GCE service and crea
 
 ## Use an Instance
 
-Run `gcloud config set project PROJECT_ID` to tell `gcloud` your project ID, which should be given when you created your project `ID PROJECT_ID`. Then run `gstart <instance_name>` to create a GCE VM instance.  It usually takes 2 minutes.  `gstart` also runs the provisioning scripts.
+Run `gcloud config set project PROJECT_ID` to tell `gcloud` your project ID, which was assigned when the project was created.  Then run `gstart <instance_name>` to create a GCE VM instance.  It usually takes 2 minutes.  `gstart` also runs the provisioning scripts.
 
 After `gstart` finishes, run `gssh <instance_name>` to connect to the instance.
 
