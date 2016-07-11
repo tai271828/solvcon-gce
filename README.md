@@ -39,13 +39,22 @@ To remove the instance (and stops being charged), run `gce-delete-instance <inst
 
 ## Cache Conda Packages
 
-To save time from downloading conda packages from the Anaconda server, `solvcon-gce` provides a script to make a local cache in [Google Cloud Storage](https://cloud.google.com/storage) bucket:
+To save time from downloading conda packages from the Anaconda server, `solvcon-gce` needs to cache them in a [Google Cloud Storage](https://cloud.google.com/storage) bucket.  Before the cache is in-place, Anaconda won't be available to the instance.  `gstart` would complain like:
+
+```
+bash: /var/lib/conda/packages//Miniconda3-latest-Linux-x86_64.sh: No such file or directory
+/home/tai271828/opt/gce/bin/admin/install-conda.sh: line 12: conda: command not found
+bash: /var/lib/conda/packages//Miniconda2-latest-Linux-x86_64.sh: No such file or directory
+/home/tai271828/opt/gce/bin/admin/install-conda.sh: line 18: conda: command not found
+```
+
+To populate the cache, run:
 
 ```bash
 $ gce-prepare-conda-packages <bucket_name>
 ```
 
-You need to create the bucket first.  Please note that the bucket should be created in the same zone of the `solvcon-gce` tools assume, otherwise additional charges may incur.  For now it is `asia-east1-c`.
+The `<bucket_name>` must be `gs://conda-packages/` (it's hard-coded in `solvcon-gce` script).  Before executing the above command, you need to create the bucket in the [Google Cloud Console](https://console.cloud.google.com).  Please note that the bucket should be created in the same zone that the `solvcon-gce` tools assume, otherwise additional charges may incur.  For now it is `asia-east1-c`.
 
 ## Trouble Shooting
 
