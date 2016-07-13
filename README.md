@@ -48,13 +48,15 @@ To populate the cache, run:
 $ gce-prepare-conda-packages
 ```
 
-The script will create a bucket based on the project ID (`gs://<project_id>-conda-packages/`).  Before executing the above command, you need to create the bucket yourself.Please note that the bucket should be created in the same zone that the `solvcon-gce` tools assume, otherwise additional charges may incur.  For now it is `asia-east1`.
+The script will create a bucket based on the project ID (`gs://<project_id>-conda-packages/`).  Before executing the above command, you need to create the bucket yourself.  Please note that the bucket should be created in the same zone that the `solvcon-gce` tools assume, otherwise additional charges may incur.  For now it is `asia-east1`.
 
 You can use [Google Compute Platform Console](https://console.cloud.google.com) or the following command to create the bucket:
 
 ```bash
 $ gsutil mb -c standard -l asia-east1 gs://<bucket-name>
 ```
+
+Running `gce-prepare-conda-packages` in GCE would make uploading to the bucket much faster.
 
 ## Use an Instance
 
