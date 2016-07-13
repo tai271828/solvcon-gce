@@ -9,7 +9,7 @@ $ git clone http://github.com/solvcon/solvcon-gce ~/opt/gce
 To enable it, run `source ~/opt/gce/etc/gcerc`.  Append the following line in ``.bashrc`` to enable it automatically:
 
 ```bash
-if [ -f source ~/opt/gce/etc/gcerc ]; then source source ~/opt/gce/etc/gcerc; fi
+if [ -f ~/opt/gce/etc/gcerc ]; then source ~/opt/gce/etc/gcerc; fi
 ```
 
 ## Set up Google Cloud Platform SDK
