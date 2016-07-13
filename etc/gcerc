@@ -31,6 +31,7 @@ fi
 
 alias gcelist="gcloud compute instances list"
 alias gcedelete="gcloud compute instances delete"
+alias gceproject="gcloud config list core/project 2> /dev/null | grep 'project =' | cut -f 3 -d ' '"
 
 gceipof() {
   instdir=$SCGCE/var/run/$1
