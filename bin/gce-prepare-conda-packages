@@ -1,6 +1,6 @@
 #!/bin/bash
 
-bucket=${1:-${SCGCE_CONDA_BUCKET_NAME}}
+bucket=${1:-gs://${SCGCE_CONDA_BUCKET_NAME}/}
 if [ -z $bucket ]; then
   echo "Usage: `basename $0` <bucket_name>"
   exit
