@@ -45,9 +45,9 @@ To save time from downloading conda packages from the Anaconda server, `solvcon-
 
 ```
 bash: /var/lib/conda/packages//Miniconda3-latest-Linux-x86_64.sh: No such file or directory
-/home/tai271828/opt/gce/bin/admin/install-conda.sh: line 12: conda: command not found
+~/opt/gce/bin/admin/install-conda.sh: line 12: conda: command not found
 bash: /var/lib/conda/packages//Miniconda2-latest-Linux-x86_64.sh: No such file or directory
-/home/tai271828/opt/gce/bin/admin/install-conda.sh: line 18: conda: command not found
+~/opt/gce/bin/admin/install-conda.sh: line 18: conda: command not found
 ```
 
 To populate the cache, run:
