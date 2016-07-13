@@ -62,8 +62,6 @@ Run `gstart <instance_name>` to create a GCE VM instance.  It usually takes 2 mi
 
 After `gstart` finishes, run `gssh <instance_name>` to connect to the instance.
 
-Before conda packages are cached in the project, execution of `gstart` will show error messages, but still work.  See the next section for making the cache work.
-
 To remove the instance (and stops being charged), run `gce-delete-instance <instance_name>`.
 
 ## Trouble Shooting
