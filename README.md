@@ -22,24 +22,16 @@ if [ -f ~/opt/gce/etc/gcerc ]; then source ~/opt/gce/etc/gcerc; fi
 
 ## Setup a Project
 
-Before using `solvcon-gce` scripts, you need to sign up the GCE service and create a [project](https://cloud.google.com/compute/docs/projects), and initialize the cloud SDK by running `gcloud init`.  See https://cloud.google.com/sdk/docs/.  After a project is created, you also need to do the following setup in the [Google Compute Platform console](https://console.cloud.google.com):
+Before using `solvcon-gce` scripts, you need to sign up the GCE service and create a [project](https://cloud.google.com/compute/docs/projects), and initialize the cloud SDK by running `gcloud init`.  See https://cloud.google.com/sdk/docs/.  After a project is created, you also need to do the following setup in the [Google Compute Platform Console](https://console.cloud.google.com):
 
 1. [Enable "Compute Engine API"](https://console.cloud.google.com/apis/).
 2. [Add a project-wide SSH key](https://console.cloud.google.com/compute/metadata/sshKeys).  Accounts logged into the GCE instance using a project-side SSH key can run `sudo` in the instance.
 
+If somehow the project ID isn't set up properly by `gcloud init`, do it by running `gcloud config set project <project_id>`.
+
 (GCP offers a 60-day free-trial program, including $300 credits: https://cloud.google.com/free-trial/ .)
 
-## Use an Instance
-
-Run `gcloud config set project PROJECT_ID` to tell `gcloud` your project ID, which was assigned when the project was created.  Then run `gstart <instance_name>` to create a GCE VM instance.  It usually takes 2 minutes.  `gstart` also runs the provisioning scripts.
-
-After `gstart` finishes, run `gssh <instance_name>` to connect to the instance.
-
-Before conda packages are cached in the project, execution of `gstart` will show error messages, but still work.  See the next section for making the cache work.
-
-To remove the instance (and stops being charged), run `gce-delete-instance <instance_name>`.
-
-## Cache Conda Packages
+### Cache Conda Packages
 
 To save time from downloading conda packages from the Anaconda server, `solvcon-gce` needs to cache them in a [Google Cloud Storage](https://cloud.google.com/storage) bucket.  Before the cache is in-place, Anaconda won't be available in the instance.  `gstart` would complain like:
 
@@ -53,10 +45,26 @@ bash: /var/lib/conda/packages//Miniconda2-latest-Linux-x86_64.sh: No such file o
 To populate the cache, run:
 
 ```bash
-$ gce-prepare-conda-packages <bucket_name>
+$ gce-prepare-conda-packages
 ```
 
-The `<bucket_name>` can only be `gs://conda-packages/` (it's hard-coded in `solvcon-gce` script).  Before executing the above command, you need to create the bucket using [Google Cloud Console](https://console.cloud.google.com).  Please note that the bucket should be created in the same zone that the `solvcon-gce` tools assume, otherwise additional charges may incur.  For now it is `asia-east1-c`.
+The script will create a bucket based on the project ID (`gs://<project_id>-conda-packages/`).  Before executing the above command, you need to create the bucket yourself.Please note that the bucket should be created in the same zone that the `solvcon-gce` tools assume, otherwise additional charges may incur.  For now it is `asia-east1`.
+
+You can use [Google Cloud Console](https://console.cloud.google.com) to create the bucket or the following command:
+
+```bash
+$ gsutil mb -c standard -l asia-east1 gs://<bucket-name>
+```
+
+## Use an Instance
+
+Run `gstart <instance_name>` to create a GCE VM instance.  It usually takes 2 minutes.  `gstart` also runs the provisioning scripts.
+
+After `gstart` finishes, run `gssh <instance_name>` to connect to the instance.
+
+Before conda packages are cached in the project, execution of `gstart` will show error messages, but still work.  See the next section for making the cache work.
+
+To remove the instance (and stops being charged), run `gce-delete-instance <instance_name>`.
 
 ## Trouble Shooting
 
