@@ -33,7 +33,7 @@ If somehow the project ID isn't set up properly by `gcloud init`, do it by runni
 
 ### Cache Conda Packages
 
-To save time from downloading conda packages from the Anaconda server, `solvcon-gce` needs to cache them in a [Google Cloud Storage](https://cloud.google.com/storage) bucket.  Before the cache is in-place, Anaconda won't be available in the instance.  `gstart` would complain like:
+To save time from downloading conda packages from the Anaconda server, `solvcon-gce` needs to cache them in a [Google Cloud Storage](https://cloud.google.com/storage) bucket.  Before the cache is in-place, Anaconda won't be available in the instance, and when starting the instance, `solvcon-gce` scripts would complain:
 
 ```
 bash: /var/lib/conda/packages//Miniconda3-latest-Linux-x86_64.sh: No such file or directory
