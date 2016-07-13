@@ -1,10 +1,11 @@
 #!/bin/bash
 
-bucket=$1
+bucket=${1:-${SCGCE_CONDA_BUCKET_NAME}}
 if [ -z $bucket ]; then
   echo "Usage: `basename $0` <bucket_name>"
   exit
 fi
+echo "Prepare to sync to bucket \"$bucket\""
 
 conda_install() {
   installdir=$1

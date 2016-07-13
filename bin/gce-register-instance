@@ -14,8 +14,8 @@ echo "Instance IP: $instip"
 echo $instip > $instdir/public_ip
 
 ssh -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no \
-  $instip "ssh-keyscan $instip 2> /dev/null > /tmp/host_key.pub"
+  $instip "ssh-keyscan $instip 2> /dev/null > /tmp/host_key.pub" || exit
 scp -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no \
-  $instip:/tmp/host_key.pub $instdir/known_hosts
+  $instip:/tmp/host_key.pub $instdir/known_hosts || exit
 
 # vim: set et nobomb fenc=utf8 ft=sh ff=unix sw=2 ts=2:

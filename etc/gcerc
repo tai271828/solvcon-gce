@@ -33,6 +33,8 @@ alias gcelist="gcloud compute instances list"
 alias gcedelete="gcloud compute instances delete"
 alias gceproject="gcloud config list core/project 2> /dev/null | grep 'project =' | cut -f 3 -d ' '"
 
+export SCGCE_CONDA_BUCKET_NAME="`gceproject`-conda-packages"
+
 gceipof() {
   instdir=$SCGCE/var/run/$1
   cat $instdir/public_ip
@@ -58,6 +60,13 @@ gstart() {
     gce-create-instance $instname
   fi
   gce-register-instance $instname
+  registered=$?
+  while [ $registered -ne 0 ] ; do
+    echo "SSH not ready, wait 3 seconds ..."
+    sleep 3
+    gce-register-instance $instname
+    registered=$?
+  done
   cmd="while [ ! -f /var/lib/bootstrap-gce.sh ] ; \
 do echo \"file not found, wait 3 seconds ...\" ; sleep 3 ; done ; \
 echo \"run /var/lib/bootstrap-gce.sh\" ; \

@@ -17,7 +17,7 @@ timedatectl set-timezone Asia/Taipei
 apt-get install -y git build-essential liblapack-pic liblapack-dev
 # downloadload conda packages.
 mkdir -p /var/lib/conda/packages
-gsutil -m rsync -d -r gs://conda-packages/ /var/lib/conda/packages/
+gsutil -m rsync -d -r gs://${SCGCE_CONDA_BUCKET_NAME}/ /var/lib/conda/packages/
 # prepare gce bootstrap. (make it the last step!)
 wget -q https://raw.githubusercontent.com/solvcon/solvcon-gce/master/bin/admin/bootstrap-gce.sh
 chmod a+rx bootstrap-gce.sh
