@@ -14,6 +14,7 @@ cat << EOF >> $startup
 # set time zone.
 timedatectl set-timezone Asia/Taipei
 # install essential packages.
+apt-get update -y
 apt-get install -y git build-essential liblapack-pic liblapack-dev
 # downloadload conda packages.
 mkdir -p /var/lib/conda/packages
