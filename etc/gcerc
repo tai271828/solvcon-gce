@@ -85,6 +85,11 @@ alias gcescp="scp -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no"
 # conda.
 alias use.conda3="namemunge PATH ~/opt/conda3/bin"
 alias use.conda2="namemunge PATH ~/opt/conda2/bin"
-if [ -d ~/opt/conda3/bin ]; then use.conda3; fi
+# aliases are not expanded when the shell is not interactive.  This cause error
+# message "use.conda3: command not found" dumped to stdout, and may result in
+# the other issues. For example, when non-interactive ssh connection is
+# established to scale up parallel computing, the shell may access the message
+# from the stdout.  Use explicit commands instead of aliases.
+if [ -d ~/opt/conda3/bin ]; then namemunge PATH ~/opt/conda3/bin; fi
 
 # vim: set et nobomb fenc=utf8 ft=sh ff=unix sw=2 ts=2:
