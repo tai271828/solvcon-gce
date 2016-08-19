@@ -34,8 +34,7 @@ alias gcedelete="gcloud compute instances delete"
 alias gceproject="gcloud config list core/project 2> /dev/null | grep 'project =' | cut -f 3 -d ' '"
 
 # During ssh remote execution, sometimes the alias isn't available.
-# FIXME: this is slow.
-if [ -n `which gcloud` ] && [ -n "$(type -t gceproject)" ] && [ "$(type -t gceproject)" == alias ]; then
+if [ -z "${SCGCE_NO_BUCKET_NAME}" ] && [ -n `which gcloud` ] && [ -n "$(type -t gceproject)" ] && [ "$(type -t gceproject)" == alias ]; then
   export SCGCE_CONDA_BUCKET_NAME="`gceproject`-conda-packages"
 else
   export SCGCE_CONDA_BUCKET_NAME=""
