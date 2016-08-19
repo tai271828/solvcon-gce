@@ -91,5 +91,6 @@ alias use.conda2="namemunge PATH ~/opt/conda2/bin"
 # established to scale up parallel computing, the shell may access the message
 # from the stdout.  Use explicit commands instead of aliases.
 if [ -d ~/opt/conda3/bin ]; then namemunge PATH ~/opt/conda3/bin; fi
+if [ -d ~/solvcon ]; then export SCSRC=$HOME/solvcon; fi
 
 # vim: set et nobomb fenc=utf8 ft=sh ff=unix sw=2 ts=2:

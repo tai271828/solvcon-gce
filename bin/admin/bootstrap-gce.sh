@@ -31,4 +31,8 @@ echo $enablestring >> $acctfile
 echo "install conda with Python 3 and 2 ..."
 $HOME/opt/gce/bin/admin/install-conda.sh
 
+# get ready to use SOLVCON
+echo "building SOLVCON..."
+$HOME/opt/gce/bin/admin/install-solvcon.sh $acctfile
+
 # vim: set et nobomb fenc=utf8 ft=sh ff=unix sw=2 ts=2:
