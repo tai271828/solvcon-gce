@@ -34,6 +34,7 @@ alias gcedelete="gcloud compute instances delete"
 alias gceproject="gcloud config list core/project 2> /dev/null | grep 'project =' | cut -f 3 -d ' '"
 
 # During ssh remote execution, sometimes the alias isn't available.
+# FIXME: this is slow.
 if [ -n `which gcloud` ] && [ -n "$(type -t gceproject)" ] && [ "$(type -t gceproject)" == alias ]; then
   export SCGCE_CONDA_BUCKET_NAME="`gceproject`-conda-packages"
 else
@@ -59,10 +60,55 @@ gscp() {
 }
 
 gstart() {
+
+  # default value.
+  machtype="n1-standard-1"
+  disksize="10GB"
+  noinit=""
+
+  usage="Usage: gstart <instance_name> [-m machine_type] [-d disk_size]"
+
   instname=$1
-  noinst=$2
-  if [ -z "$noinst" ]; then
-    gce-create-instance $instname
+  shift
+  if [ -z "$instname" ]; then
+    echo "Incorrect instance name"
+    echo $usage
+    return
+  fi
+
+  while [[ $# -gt 0 ]]
+  do
+  key="$1"
+
+  case $key in
+    -n|--no-initialize)
+    noinit="1"
+    ;;
+    -m|--mechine-type)
+    machtype="$2"
+    shift
+    ;;
+    -d|--disk-size)
+    disksize="$2"
+    shift
+    ;;
+    -h|--help)
+    help="1"
+    ;;
+    *)
+      # unknown option
+    ;;
+  esac
+  shift # past argument or value
+  done
+
+  if [ -n "$help" ]; then
+    echo $usage
+    return
+  fi
+
+  if [ -z "$noinit" ]; then
+    gce-create-instance $instname -m $machtype -d $disksize
   fi
   gce-register-instance $instname
   registered=$?

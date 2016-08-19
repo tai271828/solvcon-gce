@@ -2,12 +2,47 @@
 
 SCOPES=${SCOPES:-storage-ro}
 
+# default value.
+machtype="n1-standard-1"
+disksize="10GB"
+
+usage="Usage: `basename $0` <instance_name> [-m machine_type] [-d disk_size]"
+
 instname=$1
+shift
 if [ -z "$instname" ]; then
-  echo "Usage: `basename $0` <instance_name> [machine_type]"
+  echo "Incorrect instance name"
+  echo $usage
   exit
 fi
-machtype=${2:-n1-standard-1}
+
+while [[ $# -gt 0 ]]
+do
+key="$1"
+
+case $key in
+  -m|--mechine-type)
+  machtype="$2"
+  shift
+  ;;
+  -d|--disk-size)
+  disksize="$2"
+  shift
+  ;;
+  -h|--help)
+  help="1"
+  ;;
+  *)
+    # unknown option
+  ;;
+esac
+shift # past argument or value
+done
+
+if [ -n "$help" ]; then
+  echo $usage
+  exit
+fi
 
 startup=$(mktemp -t gcp.startup.XXXXXXXXXX.sh) || exit
 cat << EOF >> $startup
@@ -29,7 +64,7 @@ cat $startup | sed -e "s/^/  /"
 
 cmd="gcloud compute instances create $instname --machine-type $machtype \
   --zone asia-east1-c --image-family ubuntu-1404-lts \
-  --image-project ubuntu-os-cloud --boot-disk-size 10GB \
+  --image-project ubuntu-os-cloud --boot-disk-size $disksize \
   --scopes $SCOPES \
   --metadata-from-file startup-script=$startup"
 echo $cmd
