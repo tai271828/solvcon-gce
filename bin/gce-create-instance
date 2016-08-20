@@ -4,7 +4,7 @@ SCOPES=${SCOPES:-storage-ro}
 
 # default value.
 machtype="n1-standard-1"
-disksize="10GB"
+disksize="20GB"
 
 usage="Usage: `basename $0` <instance_name> [-m machine_type] [-d disk_size]"
 
@@ -44,6 +44,8 @@ if [ -n "$help" ]; then
   exit
 fi
 
+scgce_conda_bucket_name="`gcloud config list core/project 2> /dev/null | grep 'project =' | cut -f 3 -d ' '`"
+scgce_conda_bucket_name="${scgce_conda_bucket_name}-conda-packages"
 startup=$(mktemp -t gcp.startup.XXXXXXXXXX.sh) || exit
 cat << EOF >> $startup
 # set time zone.
@@ -53,7 +55,7 @@ apt-get update -y
 apt-get install -y git build-essential liblapack-pic liblapack-dev
 # downloadload conda packages.
 mkdir -p /var/lib/conda/packages
-gsutil -m rsync -d -r gs://${SCGCE_CONDA_BUCKET_NAME}/ /var/lib/conda/packages/
+gsutil -m rsync -d -r gs://${scgce_conda_bucket_name}/ /var/lib/conda/packages/
 # prepare gce bootstrap. (make it the last step!)
 wget -q https://raw.githubusercontent.com/solvcon/solvcon-gce/master/bin/admin/bootstrap-gce.sh
 chmod a+rx bootstrap-gce.sh

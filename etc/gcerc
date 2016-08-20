@@ -62,7 +62,7 @@ gstart() {
 
   # default value.
   machtype="n1-standard-1"
-  disksize="10GB"
+  disksize="20GB"
   noinit=""
 
   usage="Usage: gstart <instance_name> [-m machine_type] [-d disk_size]"
