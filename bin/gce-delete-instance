@@ -1,12 +1,40 @@
 #!/bin/bash
 
+uage="Usage: `basename $0` <instance_name> [-q | --quite]"
+
 instname=$1
 if [ -z "$instname" ]; then
-  echo "Usage: `basename $0` <instance_name>"
+  echo $usage
   exit
 fi
 
-gcloud compute instances delete $instname
+while [[ $# -gt 0 ]]
+do
+key="$1"
+
+cmd="gcloud compute instances delete $instname"
+
+case $key in
+  -q|--quite)
+  cmd="$cmd -q"
+  shift
+  ;;
+  -h|--help)
+  help="1"
+  ;;
+  *)
+    # unknown option
+  ;;
+esac
+shift # past argument or value
+done
+
+if [ -n "$help" ]; then
+  echo $usage
+  exit
+fi
+
+$cmd
 instdir=$SCGCE/var/run/$instname
 if [ -d $instdir ]; then rm -rf $instdir; fi
 
