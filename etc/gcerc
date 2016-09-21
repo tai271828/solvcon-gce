@@ -124,6 +124,152 @@ echo \"run /var/lib/bootstrap-gce.sh\" ; \
   gssh $instname $cmd
 }
 
+gmaster() {
+  # build a master node of SOLVCON cluster.
+
+  usage="Usage: gmaster <instance_name>"
+
+  instname=$1
+  shift
+  if [ -z "$instname" ]; then
+    echo "Incorrect instance name"
+    echo $usage
+    return
+  fi
+
+  while [[ $# -gt 0 ]]
+  do
+  key="$1"
+
+  case $key in
+    -h|--help)
+    help="1"
+    ;;
+    *)
+      # unknown option
+    ;;
+  esac
+  shift # past argument or value
+  done
+
+  if [ -n "$help" ]; then
+    echo $usage
+    return
+  fi
+
+  script_location="$HOME/opt/gce/bin/admin/bootstrap-cluster.sh"
+  cmd="echo \"run $script_location master\" ; \
+$script_location master"
+  gssh $instname $cmd
+}
+
+gclient() {
+  # build a client node of SOLVCON cluster.
+
+  usage="Usage: gclient <instance_name> [-i master node IP]"
+
+  instname=$1
+  shift
+  if [ -z "$instname" ]; then
+    echo "Incorrect instance name"
+    echo $usage
+    return
+  fi
+
+  while [[ $# -gt 0 ]]
+  do
+  key="$1"
+
+  case $key in
+    -i|--ip-address)
+    ip_address="$2"
+    shift
+    ;;
+    -h|--help)
+    help="1"
+    ;;
+    *)
+      # unknown option
+    ;;
+  esac
+  shift # past argument or value
+  done
+
+  if [ -n "$help" ]; then
+    echo $usage
+    return
+  fi
+
+  script_location="$HOME/opt/gce/bin/admin/bootstrap-cluster.sh"
+  ip_address=`gce-guess-master`
+  script_cmd="$script_location client -i $ip_address"
+  cmd="echo \"run $script_cmd\" ; \
+$script_cmd"
+  gssh $instname $cmd
+}
+
+gcluster() {
+  # build a SOLVCON cluster with GCE.
+  # instance number should be larger than 1, because there should be 1 node used
+  # as a master and the others are client nodes. The master node is bulit by
+  # default.
+  usage="Usage: gcluster <instance_number>"
+
+  instnumber=$1
+  shift
+  if [ "$instnumber" -lt 1 ]; then
+    echo "Incorrect instance number."
+    echo $usage
+    return
+  fi
+
+  while [[ $# -gt 0 ]]
+  do
+  key="$1"
+
+  case $key in
+    -n|--nosetests)
+    # build and run nosetests right after the cluster is ready.
+    nose="1"
+    ;;
+    -h|--help)
+    help="1"
+    ;;
+    *)
+      # unknown option
+    ;;
+  esac
+  shift # past argument or value
+  done
+
+  if [ -n "$help" ]; then
+    echo $usage
+    return
+  fi
+
+  echo "Building master node ..."
+  # Do not use underscore for instance naming. GCE kits do not allow underscore
+  # for field conflict.
+  gstart "solvcon-cluster-master"
+  gmaster "solvcon-cluster-master"
+  for (( node_index=1; node_index<=$instnumber; node_index++ ))
+  #for node_index in {1..$instnumber};
+  do
+    echo "Building client node $node_index ..."
+    gstart "solvcon-cluster-client-$node_index"
+    gclient "solvcon-cluster-client-$node_index"
+  done
+  echo "Complete to build a SOLVCON cluster!"
+  if [ -n "$nose"]; then
+    cmd="source activate ; \
+    export SOLVCON_NODELIST=$HOME/solvcon-remote/node_list ; \
+    cd $HOME/solvcon-remote/solvcon-src ; \
+    python setup.py build_ext --inplace; \
+    nosetests ftests/parallel/test_remote.py"
+    gssh solvcon-cluster-client-1 $cmd
+  fi
+}
+
 alias gcessh="ssh -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no"
 alias gcescp="scp -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no"
 
