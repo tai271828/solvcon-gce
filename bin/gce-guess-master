@@ -1,0 +1,18 @@
+#!/bin/bash
+# guess master node and try to return its IP address.
+
+guess_candidates=`gcloud --format="table[no-heading](networkInterfaces[0].networkIP, name)" compute instances list | grep master`
+guess_candidates_nf=`echo $guess_candidates | awk {'print NF'}`
+
+# NF is 2 because it is ip-hostname pair.
+if [ ! $guess_candidates_nf -eq 2 ]; then
+  echo "Can not guess which instance is the master node successfully. Possible candidates:"
+  echo $guess_candidates
+  exit
+fi
+
+guess_ip=`echo $guess_candidates | awk {'print $1'}`
+
+echo $guess_ip
+
+# vim: set et nobomb fenc=utf8 ft=sh ff=unix sw=2 ts=2:
