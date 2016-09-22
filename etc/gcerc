@@ -260,7 +260,7 @@ gcluster() {
     gclient "solvcon-cluster-client-$node_index"
   done
   echo "Complete to build a SOLVCON cluster!"
-  if [ -n "$nose"]; then
+  if [ -n "$nose" ]; then
     cmd="source activate ; \
     export SOLVCON_NODELIST=$HOME/solvcon-remote/node_list ; \
     cd $HOME/solvcon-remote/solvcon-src ; \
