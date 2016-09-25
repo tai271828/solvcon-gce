@@ -265,7 +265,8 @@ gcluster() {
     export SOLVCON_NODELIST=$HOME/solvcon-remote/node_list ; \
     cd $HOME/solvcon-remote/solvcon-src ; \
     python setup.py build_ext --inplace; \
-    nosetests ftests/parallel/test_remote.py"
+    nosetests --with-doctest -v; \
+    nosetests ftests/parallel/* -v"
     gssh solvcon-cluster-client-1 $cmd
   fi
 }
