@@ -1,29 +1,26 @@
 #!/bin/bash
 
-uage="Usage: `basename $0` <instance_name> [-q | --quite]"
-
-instname=$1
-if [ -z "$instname" ]; then
-  echo $usage
-  exit
-fi
+usage="Usage: `basename $0` [instance1 [instance2 [...]]] [-a | --all] [-q | --quiet] [-h | --help]"
 
 while [[ $# -gt 0 ]]
 do
 key="$1"
 
-cmd="gcloud compute instances delete $instname"
-
 case $key in
-  -q|--quite)
-  cmd="$cmd -q"
-  shift
+  -a|--all)
+  # delete all instances by default
+  instances_to_destroy=`gcloud --format="table[no-heading](name)" compute instances list`
+  ;;
+  -q|--quiet)
+  quiet="-q"
   ;;
   -h|--help)
   help="1"
   ;;
   *)
-    # unknown option
+  # Unknown option, treat it as a instance name.
+  # Append it into the instance list to be destroyed.
+  instances_to_destroy="$instances_to_destroy $key"
   ;;
 esac
 shift # past argument or value
@@ -34,8 +31,18 @@ if [ -n "$help" ]; then
   exit
 fi
 
-$cmd
-instdir=$SCGCE/var/run/$instname
-if [ -d $instdir ]; then rm -rf $instdir; fi
+if [ -z "$instances_to_destroy" ]; then
+  echo "No instance is given."
+  exit
+fi
+
+for instance in $instances_to_destroy
+do
+  echo "Destorying instance: $instance"
+  cmd="gcloud compute instances delete $instance $quiet"
+  $cmd
+  instdir=$SCGCE/var/run/$instance
+  if [ -d $instdir ]; then rm -rf $instdir; fi
+done
 
 # vim: set et nobomb fenc=utf8 ft=sh ff=unix sw=2 ts=2:
