@@ -217,7 +217,7 @@ gcluster() {
 
   instnumber=$1
   shift
-  if [ "$instnumber" -lt 1 ]; then
+  if [ -z "$instnumber" ] || [ "$instnumber" -lt 1 ]; then
     echo "Incorrect instance number."
     echo $usage
     return
