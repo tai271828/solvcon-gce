@@ -1,0 +1,164 @@
+#!/bin/bash
+
+SCOPES=${SCOPES:-storage-ro}
+
+# default value.
+machtype="n1-standard-1"
+disksize="10GB"
+
+read -r -d '' usage << EOM
+Usage: `basename $0` <instance_name> [-t machine_type] [-d disk_size] [-p] [-s] [--home-disk home_disk]
+EOM
+
+instname=$1
+shift
+if [ -z "$instname" ]; then
+  echo "Incorrect instance name"
+  echo $usage
+  exit
+fi
+
+while [[ $# -gt 0 ]]
+do
+key="$1"
+case $key in
+  -t|--mechine-type)
+  machtype="$2"
+  shift
+  ;;
+  -d|--disk-size)
+  disksize="$2"
+  shift
+  ;;
+  -p|--provision)
+  provision="yes"
+  ;;
+  -s|--shutdown)
+  shutdown="yes"
+  ;;
+  --home-disk)
+  homedisk="$2"
+  shift
+  ;;
+  -h|--help)
+  help="1"
+  ;;
+  *)
+    # unknown option
+  ;;
+esac
+shift # past argument or value
+done
+
+if [ -n "$help" ]; then
+  echo $usage
+  exit
+fi
+
+startup=$(mktemp -t gcp.startup.XXXXXXXXXX.sh) || exit
+
+if [ -n "$provision" ]; then
+  cat << EOF >> $startup
+# set time zone.
+timedatectl set-timezone Asia/Taipei
+# install essential packages.
+apt-get update -y
+apt-get install -y git unzip build-essential liblapack-pic liblapack-dev silversearcher-ag tmux screen
+apt-get clean -y
+EOF
+
+  cat << EOF >> $startup
+# install conda.
+conda_install() {
+  installdir=\$1
+  instfile=\$2
+  if [[ ! -f \$instfile ]]; then
+    echo "Download from http://repo.continuum.io/miniconda/\$instfile"
+    wget --quiet http://repo.continuum.io/miniconda/\$instfile
+  fi
+  chmod a+x \$instfile
+  bash \$instfile -b -p \$installdir
+  rm -f \$instfile
+  PATH=\$installdir/bin:\$PATH
+
+  conda install -y conda-build anaconda \
+    cmake six setuptools pip sphinx ipython jupyter \
+    cython numpy netcdf4 nose pytest paramiko boto graphviz
+  conda update -y conda
+  conda update -y --all
+  conda clean -y --all
+}
+
+conda_install /home/ubuntu/opt/conda3 Miniconda3-latest-Linux-x86_64.sh
+EOF
+
+  cat << EOF >> $startup
+# clone workspace.
+scratch=\$(mktemp -d -t tmp.XXXXXXXXXX) || exit
+rm -rf \$scratch
+git clone http://github.com/yungyuc/workspace \$scratch
+mv \$scratch/.git /home/ubuntu
+cd /home/ubuntu
+git checkout -- .
+cd /root
+# clone solvcon.
+git clone http://github.com/solvcon/solvcon /home/ubuntu/solvcon
+# clone solvcon-gce.
+git clone http://github.com/solvcon/solvcon-gce /home/ubuntu/opt/gce
+# write to ~/.bash_acct.
+echo "if [ -f ~/opt/gce/etc/gcerc ]; then source ~/opt/gce/etc/gcerc; fi" >> /home/ubuntu/.bash_acct
+EOF
+
+  cat << EOF >> $startup
+# finalize.
+chown -R ubuntu.ubuntu /home/ubuntu
+EOF
+
+  if [ -n "$shutdown" ]; then
+    cat << EOF >> $startup
+# clean up and shutdown.
+rm -rf /home/*/.ssh
+shutdown -h now
+EOF
+  fi
+
+elif [ -n "$homedisk" ]; then
+  cat << EOF >> $startup
+# mount workspace
+mount -o discard,defaults /dev/sdb /home
+EOF
+fi
+
+echo "Startup file:"
+cat $startup | sed -e "s/^/  /"
+
+cmd="gcloud compute instances create $instname --machine-type $machtype \
+--zone asia-east1-c \
+--boot-disk-size 10GB \
+--scopes $SCOPES \
+--metadata-from-file startup-script=$startup"
+
+if [ -n "$provision" ]; then
+  cmd="$cmd \
+--image-family ubuntu-1404-lts \
+--image-project ubuntu-os-cloud"
+else
+  cmd="$cmd \
+--image-family solvcon-ubuntu1404lts \
+--image-project solvcon-service"
+fi
+
+if [ -n "$shutdown" ]; then
+  cmd="$cmd \
+--no-boot-disk-auto-delete"
+fi
+
+if [ -n "$homedisk" ]; then
+  cmd="$cmd \
+--disk=device-name=sdb,mode=rw,name=$homedisk"
+fi
+
+echo $cmd
+$cmd
+
+# vim: set et nobomb fenc=utf8 ft=sh ff=unix sw=2 ts=2:
