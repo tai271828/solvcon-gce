@@ -1,0 +1,56 @@
+#!/bin/bash
+
+SCOPES=${SCOPES:-storage-ro}
+
+# default value.
+machtype="n1-standard-1"
+disksize="10GB"
+
+read -r -d '' usage << EOM
+Usage: `basename $0` disk_image_name family_name 
+EOM
+
+diskname=$1
+shift
+if [ -z "$diskname" ]; then
+  echo "Incorrect diskname"
+  echo $usage
+  exit
+fi
+
+familyname=$1
+shift
+if [ -z "$familyname" ]; then
+  echo "Incorrect familyname"
+  echo $usage
+  exit
+fi
+
+while [[ $# -gt 0 ]]
+do
+key="$1"
+case $key in
+  -h|--help)
+  help="1"
+  ;;
+  *)
+    # unknown option
+  ;;
+esac
+shift # past argument or value
+done
+
+if [ -n "$help" ]; then
+  echo $usage
+  exit
+fi
+
+cmd="gcloud compute images create $diskname \
+--source-disk $diskname
+--family $familyname
+--source-disk-zone asia-east1-c"
+
+echo $cmd
+$cmd
+
+# vim: set et nobomb fenc=utf8 ft=sh ff=unix sw=2 ts=2:
