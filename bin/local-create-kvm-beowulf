@@ -81,7 +81,12 @@ xmlconfig = """
 """
 
 conn = libvirt.open('qemu:///system')
+if conn == None:
+    print("CRITICAL: Failed to connect to the hypervizor")
+
 instance = conn.defineXML(xmlconfig)
+if instance == None:
+    print("CRITICAL: Failed to define the instance")
 
 instances = conn.listDefinedDomains()
 print('Defined instances: {}'.format(instances))
@@ -93,3 +98,5 @@ print(instance.isActive())
 instance.undefine()
 instances = conn.listDefinedDomains()
 print('Defined instances: {}'.format(instances))
+
+conn.close()
