@@ -85,3 +85,11 @@ instance = conn.defineXML(xmlconfig)
 
 instances = conn.listDefinedDomains()
 print('Defined instances: {}'.format(instances))
+
+instance.create()
+print(instance.isActive())
+instance.destroy()
+print(instance.isActive())
+instance.undefine()
+instances = conn.listDefinedDomains()
+print('Defined instances: {}'.format(instances))
