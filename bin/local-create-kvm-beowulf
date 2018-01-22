@@ -27,7 +27,7 @@ xmlconfig = """
         <emulator>/usr/bin/qemu-system-x86_64</emulator>
         <disk type='file' device='disk'>
             <driver name='qemu' type='raw'/>
-            <source file='/tmp/debian.img'/>
+            <source file='/home/tai271828/virt-manager/images/ubuntu-16.04.1-server-amd64.img'/>
             <backingStore/>
             <target dev='hda' bus='ide'/>
             <alias name='ide0-0-0'/>
@@ -90,6 +90,9 @@ if instance == None:
 
 instances = conn.listDefinedDomains()
 print('Defined instances: {}'.format(instances))
+
+import time
+time.sleep(3)
 
 instance.create()
 print(instance.isActive())
